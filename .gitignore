@@ -1,0 +1,5 @@
+# Ignore notes and drafts
+Archive
+
+# Cache
+__pycache__
