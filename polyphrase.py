@@ -77,7 +77,7 @@ class PolyPhraseGenerator:
         random.shuffle(elements)
         return ''.join(elements)
 
-    def generate_password(self, num_words, language, max_length):
+    def generate_password(self, num_words, language, max_length, min_length):
         """Generate a secure password with specified number of words"""
         language_options = {
             'poly': [self.english_words, self.french_words, self.spanish_words, self.latin_words],
@@ -108,17 +108,19 @@ class PolyPhraseGenerator:
         password = " ".join(elements)
         
         # Double check length and adjust if needed
-        if len(password) < 16:
+        if len(password) < min_length:
             # Add another word if too short
             word_list = secrets.choice(word_lists)
             word = secrets.choice(word_list)
             elements.append(word)
             password = " ".join(elements)
-        elif len(password) > 32:
-            # Remove a word if too long
-            elements.pop(0)
-            password = " ".join(elements)
-            
+        elif len(password) > max_length:
+            # Remove a word if too long, avoiding the special token
+            if elements[-1] == special_token:
+                elements.pop(-1)
+            else:
+                elements.pop(0)
+        password = " ".join(elements)
         return password
 
     def check_password_strength(self, password):
@@ -131,13 +133,15 @@ class PolyPhraseGenerator:
         }
 
 def main():
-    parser = argparse.ArgumentParser(description='Generate secure and somewhat memorable multilingual passwords')
+    parser = argparse.ArgumentParser(description='Generate secure and somewhat memorable multilingual passwords.')
     parser.add_argument('-n', '--num-passwords', type=int, default=3,
                        help='Number of passwords to generate')
-    parser.add_argument('-w', '--words', type=int, default=4,
-                       help='Number of words per password')
+    parser.add_argument('-w', '--words', type=int, default=3,
+                       help='Number of words per password (default 3, adjusted to meet length requirements)')
     parser.add_argument('-m', '--max-length', type=int, default=32,
-                       help='Max length of password password')
+                       help='Max length of password password (default 32)')
+    parser.add_argument('-i', '--min-length', type=int, default=16,
+                       help='Min length of password password (default 16)')
     parser.add_argument('-p', '--password', type=str,
                        help='Check the strength of an existing password')
     parser.add_argument('-l', '--language', type=str, choices=['english','french','latin', 'spanish', 'poly'], default='poly',
@@ -158,7 +162,7 @@ def main():
         return
     
     for i in range(args.num_passwords):
-        password = generator.generate_password(args.words, args.language, args.max_length)
+        password = generator.generate_password(args.words, args.language, args.max_length, args.min_length)
         strength = generator.check_password_strength(password)
         
         print(f"\nPolyPhrase {i+1}: \n\033[1m{password}\033[0m")
