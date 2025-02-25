@@ -12,7 +12,7 @@ class ModernFrame(ttk.Frame):
 class PolyPhraseGUI:
     def __init__(self, root):
         self.root = root
-        self.root.title("PolyPhrase Generator")
+        self.root.title("PolyPhrase Password Generator")
         self.root.minsize(500, 400)
         
         # Configure styles
@@ -51,11 +51,11 @@ class PolyPhraseGUI:
         title_frame.grid(row=0, column=0, sticky="ew", pady=(0, 20))
         
         ttk.Label(title_frame, 
-                 text="PolyPhrase Password Generator",
+                 text="PolyPhrase",
                  style='Title.TLabel').pack(anchor="w")
         
         ttk.Label(title_frame,
-                 text="Generate secure, multilingual passwords",
+                 text="Generate secure and somewhat memorable multilingual passwords.",
                  style='Subtitle.TLabel').pack(anchor="w")
         
         # Settings frame
@@ -74,18 +74,31 @@ class PolyPhraseGUI:
                                         width=15)
         self.language_menu.pack(side="right")
         
-        # Word count selection
-        words_frame = ttk.Frame(settings_frame)
-        words_frame.pack(fill="x", pady=5)
+        # Min length selection
+        min_length_frame = ttk.Frame(settings_frame)
+        min_length_frame.pack(fill="x", pady=5)
         
-        ttk.Label(words_frame, text="Number of Words:").pack(side="left")
-        self.num_words_var = tk.IntVar(value=4)
-        self.num_words_spinbox = ttk.Spinbox(words_frame,
+        ttk.Label(min_length_frame, text="Min Length:").pack(side="left")
+        self.min_length_var = tk.IntVar(value=16)
+        self.min_length_spinbox = ttk.Spinbox(min_length_frame,
                                            from_=1,
-                                           to=10,
-                                           textvariable=self.num_words_var,
+                                           to=100,
+                                           textvariable=self.min_length_var,
                                            width=5)
-        self.num_words_spinbox.pack(side="right")
+        self.min_length_spinbox.pack(side="right")
+        
+        # Max length selection
+        max_length_frame = ttk.Frame(settings_frame)
+        max_length_frame.pack(fill="x", pady=5)
+        
+        ttk.Label(max_length_frame, text="Max Length:").pack(side="left")
+        self.max_length_var = tk.IntVar(value=32)
+        self.max_length_spinbox = ttk.Spinbox(max_length_frame,
+                                           from_=1,
+                                           to=100,
+                                           textvariable=self.max_length_var,
+                                           width=5)
+        self.max_length_spinbox.pack(side="right")
         
         # Password display frame
         password_frame = ModernFrame(container)
@@ -120,8 +133,9 @@ class PolyPhraseGUI:
     def generate(self):
         try:
             language = self.language_var.get().lower()
-            num_words = self.num_words_var.get()
-            password = self.generator.generate_password(num_words=num_words, language=language)
+            min_length = self.min_length_var.get()
+            max_length = self.max_length_var.get()
+            password = self.generator.generate_password(num_words=3, language=language, max_length=max_length, min_length=min_length)
             
             # Update UI with new password
             self.result.delete(0, tk.END)

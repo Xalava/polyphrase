@@ -107,19 +107,21 @@ class PolyPhraseGenerator:
 
         password = " ".join(elements)
         
-        # Double check length and adjust if needed
+        # Double check length and adjust if needed.
+        # Quirk: Min will take precedence over max as we check it in order. It seems more secure
+        # It shouldn't be a problem with defaults (max length of word is 8, gap is 16)
+        if len(password) > max_length:
+            # Remove a word if too long, avoiding the special token
+            if elements[-1] == special_token:
+                elements.pop(-1)
+            else:
+                elements.pop(0)
         if len(password) < min_length:
             # Add another word if too short
             word_list = secrets.choice(word_lists)
             word = secrets.choice(word_list)
             elements.append(word)
             password = " ".join(elements)
-        elif len(password) > max_length:
-            # Remove a word if too long, avoiding the special token
-            if elements[-1] == special_token:
-                elements.pop(-1)
-            else:
-                elements.pop(0)
         password = " ".join(elements)
         return password
 
