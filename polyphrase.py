@@ -4,8 +4,7 @@ import argparse
 import secrets
 import os
 import pyperclip  # For clipboard functionality
-import sys       
-from download_words import download_words 
+import sys
 import zxcvbn  # For password strength checking
 
 class PolyPhraseGenerator:
@@ -22,13 +21,8 @@ class PolyPhraseGenerator:
             # Check if the data directory exists
             if not os.path.exists(self.data_dir):
                 print(f"Error: Data directory '{self.data_dir}' not found.")
-                print("Attempting to download word lists...")
-                try:
-                    download_words()
-                except Exception as e:
-                    print(f"Error downloading word lists: {e}")
-                    print("Please run the word extractor script first.")
-                    return self._get_fallback_words()
+                print("Please run the download words script first.")
+                print("$ python download_words.py")
             
             english_words = self._load_language_words('eng')
             french_words = self._load_language_words('fra')
@@ -39,8 +33,6 @@ class PolyPhraseGenerator:
             
         except Exception as e:
             print(f"Error loading dictionaries: {e}")
-            print("Using fallback word lists...")
-            return self._get_fallback_words()
     
     def _load_language_words(self, lang_code):
         """Load words for a specific language from text file"""
