@@ -3,3 +3,9 @@ Archive
 
 # Cache
 __pycache__
+
+# Virtualenv
+polyphrase-env
+
+# data
+data

@@ -6,8 +6,6 @@ Typical output:
 ```console
 ~/polyphrase$ python polyphrase.py
 
-Generating secure passphrases...
-
 PolyPhrase 1: 
 conduce }0R pluvia muesli
 Strength: 4/4           Crack time: centuries           length: 25
@@ -34,9 +32,18 @@ cd polyphrase
 ```bash
 pip install -r requirements.txt
 ```
+### Using a virtual environment
+```bash
+sudo apt install python3-venv || pip install python3-venv
 
+python -m venv polyphrase-env
+source polyphrase-env/bin/activate
+
+pip install -r requirements.txt
+```
+(On visual code, ctrl+shift+P>"select python intepreter" to fix module missing messages)
 ### Optional script
-For Unix users. Adapt the path inside polyphrase.sh. Then:
+For Unix users. **Adapt the path in polyphrase.sh.** Then:
 ```bash
 cp polyphrase.sh ~/.local/bin/
 chmod +x ~/.local/bin/polyphrase.sh
@@ -53,7 +60,6 @@ python polyphrase.py --language latin
 ```
 
 Common options:
-- `-n, --num-passwords`: Number of passwords to generate (default: 3)
 - `-l, --language`: Language choice [english, french, spanish, latin, poly] (default: poly)
 - `-p, --password`: Check strength of an existing password
 
@@ -74,6 +80,7 @@ Ideas:
 - cross-platform testing
 - bundle as a command line
 - More advanced graphical interface
+- Convert as a module (serving as library / commandline)
 
 ## Known Issues
 - Only tested on Linux systems for the moment

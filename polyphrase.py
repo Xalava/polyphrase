@@ -138,32 +138,38 @@ class PolyPhraseGenerator:
         }
 
 def main():
-    parser = argparse.ArgumentParser(description='Generate secure and somewhat memorable multilingual passwords.')
+    parser = argparse.ArgumentParser(
+        prog='polyphrase',
+        description='Generate secure and somewhat memorable multilingual passwords.',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter
+        )
     parser.add_argument('-n', '--num-passwords', type=int, default=3,
                        help='Number of passwords to generate')
     parser.add_argument('-w', '--words', type=int, default=3,
-                       help='Number of words per password (default 3, adjusted to meet length requirements)')
-    parser.add_argument('-m', '--max-length', type=int, default=32,
-                       help='Max length of password password (default 32)')
-    parser.add_argument('-i', '--min-length', type=int, default=16,
-                       help='Min length of password password (default 16)')
+                       help='Number of words per password (adjusted to meet length requirements)')
+    parser.add_argument('-mx', '--max-length', type=int, default=32,
+                       help='Max length of password password')
+    parser.add_argument('-mi', '--min-length', type=int, default=22,
+                       help='Min length of password password')
     parser.add_argument('-p', '--password', type=str,
                        help='Check the strength of an existing password')
     parser.add_argument('-l', '--language', type=str, choices=['english','french','latin', 'spanish', 'poly'], default='poly',
                        help='Language of the words in the password')
     parser.add_argument('-d', '--data-dir', type=str, default='data',
-                       help='Directory containing word list files (default: data)')
+                       help='Directory containing word list files')
+    parser.add_argument('-v','--version', action='version', version='%(prog)s 0.1')
     args = parser.parse_args()
 
     generator = PolyPhraseGenerator(data_dir=args.data_dir)
-    print("\nGenerating secure passphrases...")
     if args.password:
         strength = generator.check_password_strength(args.password)
+        if strength['score'] < 4:
+            print(f"\033[91m")
         print(f"Strength: {strength['score']}/4")
         print(f"Estimated crack time: {strength['crack_time']}")
-        
         if strength['suggestions']:
             print("Suggestions:", ', '.join(strength['suggestions']))
+        print(f"\033[0m")
         return
     
     for i in range(args.num_passwords):
@@ -187,11 +193,9 @@ def main():
                         pass  
             try:
                 pyperclip.copy(password)
-                print("(Copied to clipboard)")
+                print("\033[2m(Copied to clipboard)\033[0m")
             except pyperclip.PyperclipException:
                 print("Failed to copy to clipboard. Ensure 'xclip' or 'xsel' is installed.")
-
-    print("\nNote: Store these passwords securely and never share them.")
 
 if __name__ == "__main__":
     main()
